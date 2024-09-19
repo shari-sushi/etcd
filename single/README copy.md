@@ -7,7 +7,19 @@
   - Raft でリーダーとメンバーと候補者がすごい
   - ミラーリングとストライピング。
 
-※ 動作確認のファイル、結果は`api-multi-server`の README.md を参照のこと。
+## 準備
+
+参考：https://zenn.dev/zoetro/books/560099d25d8d7f3c8449/viewer/567acaf57ad87352fda6
+
+- 1: 起動
+  - docker build -t my-etcd .
+  - docker run --name etcd -p 2379:2379 -v etcd-data:/etcd-data my-etcd
+
+## 動作確認本番\*1
+
+- 書き込み：etcdctl put foo bar
+- 別のキーに 10 秒間だけ設定：etcdctl put foo1 bar1 --lease=1234abcd
+-
 
 ## 参考、参考になるらしいもの
 

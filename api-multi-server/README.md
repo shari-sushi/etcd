@@ -1,8 +1,10 @@
 やりたかった
 https://etcd.io/docs/v3.4/dev-guide/interacting_v3/
-とあまりにコマンドが違う(etcd のコマンドがどのサービスのどのメソッドに該当するのか変換する必要があった)ことに途中で気づいたのでボツにした。
-[API reference](https://etcd.io/docs/v3.4/dev-guide/api_reference_v3/)
-proto でやってるぽいので API というより gRPC?
+~~とあまりにコマンドが違う(etcd のコマンドがどのサービスのどのメソッドに該当するのか変換する必要があった)ことに途中で気づいたのでボツにした。~~
+~~[API reference](https://etcd.io/docs/v3.4/dev-guide/api_reference_v3/)~~
+~~proto でやってるぽいので API というより gRPC?~~
+
+と思ったら、それをhttps://github.com/etcd-io/etcd/blob/main/etcdctl/README.md#etcdctl で動かすらしい。
 
 ---
 
@@ -37,6 +39,7 @@ proto でやってるぽいので API というより gRPC?
   なお、rm しなくても `external: true`を設定すればいけるのかと思いきや、別のエラーが発生したので諦めた。
 - 3: 動作確認
   ※ https://etcd.io/docs/v3.4/dev-guide/api_reference_v3/ の service KV を参考にしてると思われる
+
   - write
     ```
     $ curl -X POST -d '{"key": "hoge","value": "hogehoge"}' http://localhost:12379/v3/kv/put
@@ -55,3 +58,33 @@ proto でやってるぽいので API というより gRPC?
     - `"mod_revision":"2"`
     - `"version":"1"`
     - `"value":"hogehoge"`
+
+- etcdctl (CLI ツール)の準備
+  　参考？：https://gist.github.com/skynet86/451c42ec3dc883e190aa7c57bc6c2acc
+
+  ```
+  # 最新バージョンとダウンロードurlをshel変数にセット(使ってるのbashだけど)
+  ETCD_VER=v3.4.26
+  DOWNLOAD_URL=https://github.com/etcd-io/etcd/releases/download
+
+  # ダウンロードとインストール
+  curl -L ${DOWNLOAD_URL}/${ETCD_VER}/etcd-${ETCD_VER}-linux-amd64.tar.gz -o etcd-${ETCD_VER}-linux-amd64.tar.gz
+  tar xzvf etcd-${ETCD_VER}-linux-amd64.tar.gz
+  sudo mv etcd-${ETCD_VER}-linux-amd64/etcdctl /usr/local/bin/
+  rm -rf etcd-${ETCD_VER}-linux-amd64*
+  ```
+
+  ↓ インストールできたことを確認
+
+  ```
+  $ etcdctl version
+  etcdctl version: 3.4.26
+  API version: 3.4
+  ```
+
+  ```
+  $ export ETCDCTL_ENDPOINTS=http://localhost:12379,http://localhost:12381
+  $ etcdctl endpoint health
+  http://localhost:12379 is healthy: successfully committed proposal: took = 2.395484ms
+  http://localhost:12381 is healthy: successfully committed proposal: took = 2.60832ms
+  ```
